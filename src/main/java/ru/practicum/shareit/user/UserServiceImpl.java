@@ -1,12 +1,14 @@
 package ru.practicum.shareit.user;
 
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.ShareItException;
+import ru.practicum.shareit.exception.ShareItExceptionCodes;
 import ru.practicum.shareit.user.interfaces.UserService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserDto;
+import ru.practicum.shareit.user.model.UserUpdateDto;
 
 import java.util.Collection;
 
@@ -28,21 +30,23 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(UserDto dto) {
         log.debug("Добавление нового пользователя с именем: {}", dto.getName());
         User user = UserMapper.mapToUser(dto);
+        if (user.getName().isBlank()) {
+            log.error("Имя пользователя не указано");
+            throw new ShareItException(ShareItExceptionCodes.EMPTY_USER_NAME);
+        }
+        if (user.getEmail().isBlank()) {
+            log.error("Email пользователя не указано");
+            throw new ShareItException(ShareItExceptionCodes.EMPTY_USER_EMAIL);
+        }
         return UserMapper.mapToUserDto(userRepository.createUser(user));
     }
 
     @Override
-    public UserDto updateUser(Long userId, UserDto dto) {
+    public UserDto updateUser(Long userId, UserUpdateDto dto) {
         checkId(userId);
-        User user = userRepository.getUserById(userId);
+        dto.setId(userId);
         log.debug("Обновление пользователя с id = {}", userId);
-        if (dto.getName() != null && !dto.getName().isBlank()) {
-            user.setName(dto.getName());
-        }
-        if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
-            user.setEmail(dto.getEmail());
-        }
-        return UserMapper.mapToUserDto(userRepository.updateUser(user));
+        return UserMapper.mapToUserDto(userRepository.updateUser(UserMapper.mapUserUpdateDtoToUser(dto)));
     }
 
     @Override
@@ -62,7 +66,7 @@ public class UserServiceImpl implements UserService {
     private void checkId(Long id) {
         if (id == null) {
             log.error("id пользователя не указан");
-            throw new ValidationException("id должен быть указан");
+            throw new ShareItException(ShareItExceptionCodes.EMPTY_USER_ID);
         }
     }
 }

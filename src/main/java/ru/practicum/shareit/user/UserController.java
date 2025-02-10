@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.interfaces.UserService;
 import ru.practicum.shareit.user.model.UserDto;
+import ru.practicum.shareit.user.model.UserUpdateDto;
 
 import java.util.Collection;
 
@@ -31,8 +32,8 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public UserDto updateUser(@PathVariable Long id, @RequestBody UserDto dto) {
-        log.info("Запрос на обновление пользователя с id = {}", dto.getId());
+    public UserDto updateUser(@PathVariable Long id, @RequestBody UserUpdateDto dto) {
+        log.info("Запрос на обновление пользователя с id = {}", id);
         return userService.updateUser(id, dto);
     }
 

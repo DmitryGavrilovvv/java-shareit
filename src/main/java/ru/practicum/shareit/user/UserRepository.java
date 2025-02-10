@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user;
 
+import jakarta.validation.constraints.Email;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.ShareItException;
@@ -30,12 +31,19 @@ public class UserRepository implements UserStorage {
     }
 
     public User updateUser(User user) {
-        final String email = user.getEmail();
+        checkUser(user.getId());
         users.computeIfPresent(user.getId(), (id, u) -> {
-                    if (!email.equals(u.getEmail())) {
-                        checkEmail(email);
-                        emailUniqSet.remove(u.getEmail());
-                        emailUniqSet.add(email);
+                    if (user.getName() != null && !user.getName().isBlank()) {
+                        user.setName(user.getName());
+                    }
+                    if (user.getEmail() != null && !user.getEmail().isBlank()) {
+                        final @Email(message = "Поле должно содержать знак @") String email = user.getEmail();
+                        if (!email.equals(u.getEmail())) {
+                            checkEmail(email);
+                            emailUniqSet.remove(u.getEmail());
+                            emailUniqSet.add(email);
+                        }
+                        user.setEmail(user.getEmail());
                     }
                     return user;
                 }
