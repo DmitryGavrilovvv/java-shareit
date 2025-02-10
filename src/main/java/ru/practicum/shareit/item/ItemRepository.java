@@ -13,7 +13,7 @@ import java.util.Map;
 @Slf4j
 @Repository
 public class ItemRepository {
-    private long id = 1;
+    private long id = 0;
     private final Map<Long, Item> items = new HashMap<>();
 
     public Item createItem(Item item) {
@@ -49,7 +49,7 @@ public class ItemRepository {
     }
 
     private long generateNewId() {
-        return id++;
+        return ++id;
     }
 
     private void checkItem(Long id) {

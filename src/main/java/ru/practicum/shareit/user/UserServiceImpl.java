@@ -4,8 +4,6 @@ import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.ShareItException;
-import ru.practicum.shareit.exception.ShareItExceptionCodes;
 import ru.practicum.shareit.user.interfaces.UserService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserDto;
@@ -28,7 +26,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto dto) {
-        checkEmail(dto);
         log.debug("Добавление нового пользователя с именем: {}", dto.getName());
         User user = UserMapper.mapToUser(dto);
         return UserMapper.mapToUserDto(userRepository.createUser(user));
@@ -43,7 +40,6 @@ public class UserServiceImpl implements UserService {
             user.setName(dto.getName());
         }
         if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
-            checkEmail(dto);
             user.setEmail(dto.getEmail());
         }
         return UserMapper.mapToUserDto(userRepository.updateUser(user));
@@ -67,16 +63,6 @@ public class UserServiceImpl implements UserService {
         if (id == null) {
             log.error("id пользователя не указан");
             throw new ValidationException("id должен быть указан");
-        }
-    }
-
-    private void checkEmail(UserDto dto) {
-        String email = dto.getEmail();
-        for (User user : userRepository.getAllUsers()) {
-            if (user.getEmail().equals(email)) {
-                log.error("E-mail = {}, уже присутствует у другого пользователя", email);
-                throw new ShareItException(ShareItExceptionCodes.DUPLICATE_EMAIL, email);
-            }
         }
     }
 }

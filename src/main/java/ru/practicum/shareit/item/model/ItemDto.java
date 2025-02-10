@@ -10,13 +10,13 @@ import ru.practicum.shareit.user.model.User;
 @Data
 @Builder
 public class ItemDto {
-    private final Long id;
+    private Long id;
     @NotBlank
     private String name;
     @NotBlank
     private String description;
     @NotNull
     private Boolean available;
-    private final User owner;
-    private final ItemRequest request;
+    private User owner;
+    private ItemRequest request;
 }
