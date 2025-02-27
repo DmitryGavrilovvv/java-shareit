@@ -7,6 +7,8 @@ import lombok.Data;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.Collection;
+
 @Data
 @Builder
 public class ItemDto {
@@ -19,4 +21,5 @@ public class ItemDto {
     private Boolean available;
     private User owner;
     private ItemRequest request;
+    private Collection<String> comments;
 }

@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ErrorHandler {
     @ExceptionHandler
     public ResponseEntity<?> throwableHandler(Throwable exception) {
-        ErrorResponse errorResponse = new ErrorResponse("Ошибка: ", exception.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(exception.toString(), exception.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
     @ExceptionHandler
     public ResponseEntity<?> shareItExceptionHandler(ShareItException exception) {
-        ErrorResponse errorResponse = new ErrorResponse("Ошибка: ", exception.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(exception.getShareItExceptionCodes().toString(), exception.getMessage());
         return ResponseEntity.status(exception.getStatus()).body(errorResponse);
     }
 

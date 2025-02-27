@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Collection<UserDto> getAllUsers() {
         log.debug("Получение списка всех пользователей");
-        return userRepository.getAllUsers().stream()
+        return userRepository.findAll().stream()
                 .map(UserMapper::mapToUserDto)
                 .toList();
     }
@@ -38,29 +38,38 @@ public class UserServiceImpl implements UserService {
             log.error("Email пользователя не указано");
             throw new ShareItException(ShareItExceptionCodes.EMPTY_USER_EMAIL);
         }
-        return UserMapper.mapToUserDto(userRepository.createUser(user));
+        return UserMapper.mapToUserDto(userRepository.save(user));
     }
 
     @Override
     public UserDto updateUser(Long userId, UserUpdateDto dto) {
         checkId(userId);
-        dto.setId(userId);
+        User updateUser = UserMapper.mapUserUpdateDtoToUser(dto);
+        User oldUser = userRepository.findById(userId).orElseThrow(
+                () -> new ShareItException(ShareItExceptionCodes.USER_NOT_FOUND, userId));
+        if (updateUser.getName() != null && !updateUser.getName().isBlank()) {
+            oldUser.setName(updateUser.getName());
+        }
+        String email = updateUser.getEmail();
+        if (email != null && !email.isBlank()) {
+            oldUser.setEmail(email);
+        }
         log.debug("Обновление пользователя с id = {}", userId);
-        return UserMapper.mapToUserDto(userRepository.updateUser(UserMapper.mapUserUpdateDtoToUser(dto)));
+        return UserMapper.mapToUserDto(userRepository.save(oldUser));
     }
 
     @Override
     public UserDto getUserById(Long id) {
         checkId(id);
         log.debug("Получение пользователя с id = {}", id);
-        return UserMapper.mapToUserDto(userRepository.getUserById(id));
+        return UserMapper.mapToUserDto(userRepository.findById(id).orElseThrow(() -> new ShareItException(ShareItExceptionCodes.USER_NOT_FOUND, id)));
     }
 
     @Override
     public void deleteUser(Long id) {
         checkId(id);
         log.debug("Удаление пользователя с id = {}", id);
-        userRepository.deleteUserById(id);
+        userRepository.deleteById(id);
     }
 
     private void checkId(Long id) {
