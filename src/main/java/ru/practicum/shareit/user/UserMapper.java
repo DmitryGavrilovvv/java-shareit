@@ -26,7 +26,6 @@ public class UserMapper {
 
     public static User mapUserUpdateDtoToUser(UserUpdateDto userDto) {
         return User.builder()
-                .id(userDto.getId())
                 .name(userDto.getName())
                 .email(userDto.getEmail())
                 .build();

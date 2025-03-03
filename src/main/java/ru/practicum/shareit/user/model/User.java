@@ -1,14 +1,22 @@
 package ru.practicum.shareit.user.model;
 
-import jakarta.validation.constraints.Email;
-import lombok.Builder;
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Builder
-@Data
+@Builder(toBuilder = true)
+@Getter
+@Setter
+@ToString
+@Entity
+@Table(name = "users")
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
     private String name;
-    @Email(message = "Поле должно содержать знак @")
+    @Column(length = 512, nullable = false, unique = true)
     private String email;
 }

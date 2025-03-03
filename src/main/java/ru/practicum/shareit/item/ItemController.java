@@ -6,7 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.interfaces.ItemService;
+import ru.practicum.shareit.item.model.CommentDto;
+import ru.practicum.shareit.item.model.ExtendedItemDto;
 import ru.practicum.shareit.item.model.ItemDto;
+import ru.practicum.shareit.item.model.UpdateItemDto;
 
 import java.util.Collection;
 
@@ -27,14 +30,14 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@PathVariable Long itemId, @RequestBody ItemDto dto,
+    public ItemDto updateItem(@PathVariable Long itemId, @RequestBody UpdateItemDto dto,
                               @RequestHeader(HEADER_SHARER_USER_ID) Long userId) {
-        log.info("Запрос на обновление вещи с id = {} у пользователя с id = {}", dto.getId(), userId);
+        log.info("Запрос на обновление вещи с id = {} у пользователя с id = {}", itemId, userId);
         return itemService.updateItem(itemId, dto, userId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable Long itemId, @RequestHeader(HEADER_SHARER_USER_ID) Long userId) {
+    public ExtendedItemDto getItemById(@PathVariable Long itemId, @RequestHeader(HEADER_SHARER_USER_ID) Long userId) {
         log.info("Запрос на получение вещи с id = {} у пользователя с id = {}", itemId, userId);
         return itemService.getItemById(itemId);
     }
@@ -49,5 +52,10 @@ public class ItemController {
     public Collection<ItemDto> searchItems(@RequestParam String text, @RequestHeader(HEADER_SHARER_USER_ID) Long userId) {
         log.info("Запрос на поиск вещей пользователя с id = {} с текстом '{}'", userId, text);
         return itemService.searchItems(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addCommentToItem(@PathVariable long itemId, @RequestHeader(name = "X-Sharer-User-Id") long authorId, @RequestBody @Valid CommentDto dto) {
+        return itemService.addCommentToItem(authorId, itemId, dto);
     }
 }
