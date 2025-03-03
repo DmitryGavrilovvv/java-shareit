@@ -9,8 +9,9 @@ import ru.practicum.shareit.booking.interfaces.BookingService;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingDto;
 import ru.practicum.shareit.booking.model.CreateBookingDto;
-import ru.practicum.shareit.exception.ShareItException;
-import ru.practicum.shareit.exception.ShareItExceptionCodes;
+import ru.practicum.shareit.exception.AccessDeniedException;
+import ru.practicum.shareit.exception.BookingException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
@@ -30,11 +31,11 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto createBooking(long bookerId, CreateBookingDto bookingDto) {
         Booking booking = BookingMapper.mapToBooking(bookerId, bookingDto);
-        User booker = userRepository.findById(bookerId).orElseThrow(() -> new ShareItException(ShareItExceptionCodes.USER_NOT_FOUND, bookerId));
+        User booker = userRepository.findById(bookerId).orElseThrow(() -> new NotFoundException(String.format("Пользователь с id = %d не найден", booking.getBooker().getId())));
         Long itemId = booking.getItem().getId();
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ShareItException(ShareItExceptionCodes.ITEM_NOT_FOUND, itemId));
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(String.format("Вещь с id = %d не найдена", booking.getItem().getId())));
         if (!item.getAvailable()) {
-            throw new ShareItException(ShareItExceptionCodes.ITEM_NOT_AVAILABLE, itemId);
+            throw new BookingException(String.format("Вещь с id = %d недоступна для бронирования", booking.getItem().getId()));
         }
         booking.setBooker(booker);
         booking.setItem(item);
@@ -44,9 +45,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto getBooking(long bookingId, long userId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new ShareItException(ShareItExceptionCodes.BOOKING_NOT_FOUND, bookingId));
+                .orElseThrow(() -> new NotFoundException(String.format("Бронь с id = %d не найдена", bookingId)));
         if (booking.getBooker().getId() != userId && booking.getItem().getOwner().getId() != userId) {
-            throw new ShareItException(ShareItExceptionCodes.ACCESS_DENIED, bookingId);
+            throw new AccessDeniedException(String.format("Доступ к брони с id = %d запрещен", bookingId));
         }
         return BookingMapper.mapToBookingDto(booking);
     }
@@ -54,7 +55,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Collection<BookingDto> getBookings(long bookerId, BookingSearchState state) {
         if (!userRepository.existsById(bookerId)) {
-            throw new ShareItException(ShareItExceptionCodes.BOOKING_NOT_FOUND, bookerId);
+            throw new NotFoundException(String.format("Пользователь с id = %d не найден", bookerId));
         }
         Collection<Booking> bookings = switch (state) {
             case ALL -> bookingRepository.findByBookerIdOrderByStartDesc(bookerId);
@@ -72,7 +73,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Collection<BookingDto> getOwnerBookings(long ownerId, BookingSearchState state) {
         if (!userRepository.existsById(ownerId)) {
-            throw new ShareItException(ShareItExceptionCodes.USER_NOT_FOUND, ownerId);
+            throw new NotFoundException(String.format("Пользователь с id = %d не найден", ownerId));
         }
 
         Collection<Booking> bookings = switch (state) {
@@ -92,10 +93,10 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto approveBooking(long bookingId, long ownerId, boolean approved) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new ShareItException(ShareItExceptionCodes.BOOKING_NOT_FOUND, bookingId));
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException(String.format("Бронь с id = %d не найдена", bookingId)));
 
         if (booking.getItem().getOwner().getId() != ownerId) {
-            throw new ShareItException(ShareItExceptionCodes.ACCESS_DENIED, bookingId);
+            throw new AccessDeniedException(String.format("Подтверждение брони с id = %d пользователем с id = %d запрещено", bookingId, ownerId));
         }
 
         if (approved) {

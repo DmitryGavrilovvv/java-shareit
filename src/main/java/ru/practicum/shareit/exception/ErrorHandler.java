@@ -1,28 +1,41 @@
 package ru.practicum.shareit.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.Map;
 
 @RestControllerAdvice
 public class ErrorHandler {
     @ExceptionHandler
-    public ResponseEntity<?> throwableHandler(Throwable exception) {
-        ErrorResponse errorResponse = new ErrorResponse(exception.toString(), exception.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleBookingException(final BookingException ex) {
+        return Map.of("error", ex.getMessage());
     }
 
     @ExceptionHandler
-    public ResponseEntity<?> shareItExceptionHandler(ShareItException exception) {
-        ErrorResponse errorResponse = new ErrorResponse(exception.getShareItExceptionCodes().toString(), exception.getMessage());
-        return ResponseEntity.status(exception.getStatus()).body(errorResponse);
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleCommentException(final CommentException ex) {
+        return Map.of("error", ex.getMessage());
     }
 
     @ExceptionHandler
-    public ResponseEntity<?> validationHandler(MethodArgumentNotValidException exception) {
-        ErrorResponse errorResponse = new ErrorResponse("Ошибка: ", exception.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Map<String, String> handleAccessDeniedException(final AccessDeniedException ex) {
+        return Map.of("error", ex.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleNotFoundException(final NotFoundException ex) {
+        return Map.of("error", ex.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleDuplicateEmailException(final DuplicateEmailException ex) {
+        return Map.of("error", ex.getMessage());
     }
 }

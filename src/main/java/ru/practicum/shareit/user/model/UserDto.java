@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 public class UserDto {
     private Long id;
+    @NotBlank
     private String name;
     @Email(message = "Поле должно содержать знак @")
     @NotBlank
