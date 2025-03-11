@@ -31,7 +31,10 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
 
     @Override
-    public BookingDto createBooking(long bookerId, CreateBookingDto bookingDto) {
+    public BookingDto createBooking(Long bookerId, CreateBookingDto bookingDto) {
+        if (bookerId == null) {
+            throw new ValidationException("Id пользователя не должен быть пустым");
+        }
         Booking booking = BookingMapper.mapToBooking(bookerId, bookingDto);
         if (booking.getStart().isAfter(booking.getEnd())) {
             throw new ValidationException("Время конца раньше времени начала");

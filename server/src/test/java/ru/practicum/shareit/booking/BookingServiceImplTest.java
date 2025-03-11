@@ -77,6 +77,19 @@ public class BookingServiceImplTest {
     }
 
     @Test
+    void shouldThrowExceptionWhenIdIsNull() {
+        UserDto user3 = userService.createUser(user1);
+        ItemDtoRequest item = itemService.createItem(user3.getId(), item1);
+        CreateBookingDto booking = CreateBookingDto.builder()
+                .itemId(item.getId())
+                .start(LocalDateTime.now().plusHours(1))
+                .end(LocalDateTime.now().plusHours(2))
+                .build();
+        assertThatThrownBy(() -> bookingService.createBooking(null, booking))
+                .isInstanceOf(ValidationException.class);
+    }
+
+    @Test
     void shouldThrowExceptionWhenItemIsNotAvailable() {
         UserDto user3 = userService.createUser(user1);
         UserDto user4 = userService.createUser(user2);

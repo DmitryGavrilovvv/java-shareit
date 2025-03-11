@@ -7,7 +7,7 @@ import ru.practicum.shareit.booking.model.CreateBookingDto;
 import java.util.Collection;
 
 public interface BookingService {
-    BookingDto createBooking(long bookerId, CreateBookingDto bookingDto);
+    BookingDto createBooking(Long bookerId, CreateBookingDto bookingDto);
 
     BookingDto getBooking(long bookingId, long userId);
 
