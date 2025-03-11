@@ -49,15 +49,15 @@ class ItemServiceImplTest {
 
     static UserDto user1;
     static UserDto user2;
-    static ItemDto item1;
-    static ItemDto item2;
+    static CreateItemDto item1;
+    static CreateItemDto item2;
 
     @BeforeAll
     static void beforeAll() {
         user1 = UserDto.builder().name("Yandex").email("yandex@practicum.ru").build();
         user2 = UserDto.builder().name("Yandex2").email("yandex2@practicum.ru").build();
-        item1 = ItemDto.builder().name("Yandex").description("YandexPracticum").available(true).build();
-        item2 = ItemDto.builder().name("Yandex2").description("YandexPracticum2").available(true).build();
+        item1 = CreateItemDto.builder().name("Yandex").description("YandexPracticum").available(true).build();
+        item2 = CreateItemDto.builder().name("Yandex2").description("YandexPracticum2").available(true).build();
     }
 
     @Test
@@ -80,11 +80,11 @@ class ItemServiceImplTest {
         UserDto user4 = userService.createUser(user2);
         ItemRequestDtoCreate itemRequestDto = ItemRequestDtoCreate.builder().description("Yandex").build();
         ItemRequestDto itemRequest = itemRequestService.createItemRequest(user4.getId(), itemRequestDto);
-        ItemDto item3 = ItemDto.builder()
+        CreateItemDto item3 = CreateItemDto.builder()
                 .name("Yandex2")
                 .description("YandexPracticum2")
                 .available(true)
-                .request(itemRequest)
+                .requestId(itemRequest.getId())
                 .build();
         ItemDtoRequest item = itemService.createItem(user3.getId(), item3);
         ExtendedItemDto getItem = itemService.getItemById(item.getId());

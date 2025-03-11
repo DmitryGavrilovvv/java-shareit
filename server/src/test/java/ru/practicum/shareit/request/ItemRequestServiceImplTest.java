@@ -53,7 +53,7 @@ class ItemRequestServiceImplTest {
 
         assertThat(itemRequest.getId()).isEqualTo(getItemRequest.getId());
         assertThat(itemRequest.getDescription()).isEqualTo(getItemRequest.getDescription());
-        assertThat(itemRequest.getRequestorId()).isEqualTo(getItemRequest.getRequestorId());
+        assertThat(itemRequest.getRequestor().getId()).isEqualTo(getItemRequest.getRequestor().getId());
     }
 
     @Test
@@ -79,7 +79,7 @@ class ItemRequestServiceImplTest {
         assertThat(itemRequests).hasSize(1);
         assertThat(itemRequests.getFirst().getId()).isEqualTo(itemRequest.getId());
         assertThat(itemRequests.getFirst().getDescription()).isEqualTo(itemRequest.getDescription());
-        assertThat(itemRequests.getFirst().getRequestorId()).isEqualTo(itemRequest.getRequestorId());
+        assertThat(itemRequests.getFirst().getRequestor().getId()).isEqualTo(itemRequest.getRequestor().getId());
     }
 
     @Test
@@ -92,6 +92,6 @@ class ItemRequestServiceImplTest {
         assertThat(itemRequests).hasSize(1);
         assertThat(itemRequests.getFirst().getId()).isEqualTo(itemRequest.getId());
         assertThat(itemRequests.getFirst().getDescription()).isEqualTo(itemRequest.getDescription());
-        assertThat(itemRequests.getFirst().getRequestorId()).isEqualTo(itemRequest.getRequestorId());
+        assertThat(itemRequests.getFirst().getRequestor().getId()).isEqualTo(itemRequest.getRequestor().getId());
     }
 }

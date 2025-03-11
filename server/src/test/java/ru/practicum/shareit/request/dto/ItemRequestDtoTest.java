@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import ru.practicum.shareit.item.model.ItemDtoRequest;
 import ru.practicum.shareit.request.model.ItemRequestDto;
+import ru.practicum.shareit.user.model.UserDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,7 +33,7 @@ class ItemRequestDtoTest {
         var dto = ItemRequestDto.builder()
                 .id(1L)
                 .description("Yandex")
-                .requestorId(1L)
+                .requestor(UserDto.builder().id(1L).build())
                 .created(time)
                 .items(List.of(item))
                 .build();
@@ -42,13 +43,13 @@ class ItemRequestDtoTest {
         assertThat(result)
                 .hasJsonPath("$.id")
                 .hasJsonPath("$.description")
-                .hasJsonPath("$.requestorId")
+                .hasJsonPath("$.requestor.id")
                 .hasJsonPath("$.created")
                 .hasJsonPath("$.items");
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(dto.getId().intValue());
         assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo(dto.getDescription());
-        assertThat(result).extractingJsonPathNumberValue("$.requestorId")
-                .isEqualTo(dto.getRequestorId().intValue());
+        assertThat(result).extractingJsonPathNumberValue("$.requestor.id")
+                .isEqualTo(dto.getRequestor().getId().intValue());
         assertThat(result).extractingJsonPathStringValue("$.created").isEqualTo("2025-03-09T12:00:00");
         assertThat(result).extractingJsonPathNumberValue("$.items[0].id")
                 .isEqualTo(dto.getItems().getFirst().getId().intValue());

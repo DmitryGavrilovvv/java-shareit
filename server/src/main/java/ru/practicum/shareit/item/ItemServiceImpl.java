@@ -16,6 +16,7 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -31,15 +32,16 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public ItemDtoRequest createItem(Long id, ItemDto dto) {
+    public ItemDtoRequest createItem(Long id, CreateItemDto dto) {
         User itemOwner = userRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("Пользователь с id = %s не найден", id)));
         log.debug("Добавление новой вещи с именем: {} пользователю с id = {}", dto.getName(), id);
         Item item = ItemMapper.mapToItem(dto);
         item.setOwner(itemOwner);
         Long itemRequestId = null;
-        if (dto.getRequest() != null && dto.getRequest().getId() != null) {
-            ItemRequest itemRequest = itemRequestRepository.findById(dto.getRequest().getId())
-                    .orElseThrow(() -> new NotFoundException("Запрос с id = " + dto.getRequest().getId() + " не найден"));
+        if (dto.getRequestId() != null) {
+            checkItemRequest(dto.getRequestId());
+            ItemRequest itemRequest = itemRequestRepository.findById(dto.getRequestId())
+                    .orElseThrow(() -> new NotFoundException("Запрос с id = " + dto.getRequestId() + " не найден"));
             item.setItemRequest(itemRequest);
             itemRequestId = itemRequest.getId();
         }
@@ -97,11 +99,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public CommentDto addCommentToItem(long authorId, long itemId, CommentDto commentDto) {
         Comment comment = CommentMapper.mapToComment(authorId, itemId, commentDto);
-        Collection<Booking> authorBookings = bookingRepository.findAllByBookerIdAndItemId(authorId, itemId);
+        Collection<Booking> authorBookings = bookingRepository.findAllByBookerIdAndItemIdAndEndBefore(authorId, itemId, LocalDateTime.now());
 
-        if (authorBookings.isEmpty() || authorBookings.stream()
-                .filter(booking -> booking.getItem().getId() == itemId)
-                .toList().isEmpty()) {
+        if (authorBookings.isEmpty()) {
             throw new CommentException(String.format("Пользователь с id = %d не может оставить комментарии к вещи с id = %d", comment.getAuthor().getId(), comment.getItem().getId()));
         }
 
@@ -109,5 +109,12 @@ public class ItemServiceImpl implements ItemService {
         comment.setAuthor(userRepository.findById(comment.getAuthor().getId()).orElseThrow(() -> new NotFoundException(String.format("Пользователь с id = %d не найден", comment.getAuthor().getId()))));
 
         return CommentMapper.mapToCommentDto(commentRepository.save(comment));
+    }
+
+    private void checkItemRequest(Long id) {
+        if (!itemRequestRepository.existsById(id)) {
+            log.error("Запроса с Id = {} не существует", id);
+            throw new NotFoundException(String.format("Запроса с Id = %s не существует", id));
+        }
     }
 }

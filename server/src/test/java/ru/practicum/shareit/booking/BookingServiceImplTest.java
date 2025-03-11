@@ -18,7 +18,7 @@ import ru.practicum.shareit.exception.BookingException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.interfaces.ItemService;
-import ru.practicum.shareit.item.model.ItemDto;
+import ru.practicum.shareit.item.model.CreateItemDto;
 import ru.practicum.shareit.item.model.ItemDtoRequest;
 import ru.practicum.shareit.user.interfaces.UserService;
 import ru.practicum.shareit.user.model.UserDto;
@@ -46,13 +46,13 @@ public class BookingServiceImplTest {
 
     static UserDto user1;
     static UserDto user2;
-    static ItemDto item1;
+    static CreateItemDto item1;
 
     @BeforeAll
     static void beforeAll() {
         user1 = UserDto.builder().name("Yandex").email("yandex@practicum.ru").build();
         user2 = UserDto.builder().name("Yandex2").email("yandex2@practicum.ru").build();
-        item1 = ItemDto.builder().name("Yandex").description("YandexPracticum").available(true).build();
+        item1 = CreateItemDto.builder().name("Yandex").description("YandexPracticum").available(true).build();
     }
 
     @Test
@@ -93,7 +93,7 @@ public class BookingServiceImplTest {
     void shouldThrowExceptionWhenItemIsNotAvailable() {
         UserDto user3 = userService.createUser(user1);
         UserDto user4 = userService.createUser(user2);
-        ItemDto item2 = ItemDto.builder()
+        CreateItemDto item2 = CreateItemDto.builder()
                 .name("Yandex")
                 .description("YandexPracticum")
                 .available(false)

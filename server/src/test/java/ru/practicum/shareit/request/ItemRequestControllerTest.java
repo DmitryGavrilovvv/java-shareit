@@ -14,6 +14,7 @@ import ru.practicum.shareit.item.model.ItemDtoRequest;
 import ru.practicum.shareit.request.interfaces.ItemRequestService;
 import ru.practicum.shareit.request.model.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequestDtoCreate;
+import ru.practicum.shareit.user.model.UserDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,7 +50,7 @@ class ItemRequestControllerTest {
         ItemRequestDto itemRequest2 = ItemRequestDto.builder()
                 .id(1L)
                 .description("YandexPracticum")
-                .requestorId(1L)
+                .requestor(UserDto.builder().id(1L).build())
                 .created(LocalDateTime.now())
                 .build();
 
@@ -62,7 +63,7 @@ class ItemRequestControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.description").value("YandexPracticum"))
-                .andExpect(jsonPath("$.requestorId").value(1));
+                .andExpect(jsonPath("$.requestor.id").value(1));
     }
 
     @Test
@@ -77,7 +78,7 @@ class ItemRequestControllerTest {
         ItemRequestDto itemRequest2 = ItemRequestDto.builder()
                 .id(1L)
                 .description("YandexPracticum")
-                .requestorId(1L)
+                .requestor(UserDto.builder().id(1L).build())
                 .created(LocalDateTime.now())
                 .items(List.of(item))
                 .build();
@@ -91,7 +92,7 @@ class ItemRequestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].description").value("YandexPracticum"))
-                .andExpect(jsonPath("$[0].requestorId").value(1))
+                .andExpect(jsonPath("$[0].requestor.id").value(1))
                 .andExpect(jsonPath("$[0].items[0].id").value(1))
                 .andExpect(jsonPath("$[0].items[0].name").value("Yandex"))
                 .andExpect(jsonPath("$[0].items[0].description").value("YandexPracticum"))
@@ -104,7 +105,7 @@ class ItemRequestControllerTest {
         ItemRequestDto itemRequest2 = ItemRequestDto.builder()
                 .id(1L)
                 .description("YandexPracticum")
-                .requestorId(1L)
+                .requestor(UserDto.builder().id(1L).build())
                 .created(LocalDateTime.now())
                 .build();
 
@@ -117,7 +118,7 @@ class ItemRequestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].description").value("YandexPracticum"))
-                .andExpect(jsonPath("$[0].requestorId").value(1));
+                .andExpect(jsonPath("$[0].requestor.id").value(1));
     }
 
     @Test
@@ -132,7 +133,7 @@ class ItemRequestControllerTest {
         ItemRequestDto itemRequest2 = ItemRequestDto.builder()
                 .id(1L)
                 .description("YandexPracticum")
-                .requestorId(1L)
+                .requestor(UserDto.builder().id(1L).build())
                 .created(LocalDateTime.now())
                 .items(List.of(item))
                 .build();
@@ -145,7 +146,7 @@ class ItemRequestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.description").value("YandexPracticum"))
-                .andExpect(jsonPath("$.requestorId").value(1))
+                .andExpect(jsonPath("$.requestor.id").value(1))
                 .andExpect(jsonPath("$.items[0].id").value(1))
                 .andExpect(jsonPath("$.items[0].name").value("Yandex"))
                 .andExpect(jsonPath("$.items[0].description").value("YandexPracticum"))

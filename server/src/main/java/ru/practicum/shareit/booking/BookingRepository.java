@@ -36,4 +36,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByItemOwnerIdAndStartAfterOrderByStartDesc(long ownerId, LocalDateTime after);
 
     List<Booking> findByItemOwnerIdAndStatusOrderByStartDesc(long ownerId, BookingStatus status);
+
+    Collection<Booking> findAllByBookerIdAndItemIdAndEndBefore(long bookerId, long itemId, LocalDateTime end);
 }

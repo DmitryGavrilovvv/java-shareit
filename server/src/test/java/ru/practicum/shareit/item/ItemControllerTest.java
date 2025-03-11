@@ -34,13 +34,13 @@ class ItemControllerTest {
     @MockBean
     ItemService itemService;
 
-    ItemDto item1;
+    CreateItemDto item1;
     ItemDto item2;
     ItemDto item3;
 
     @BeforeEach
     void beforeEach() {
-        item1 = ItemDto.builder().name("Yandex").description("YandexPracticum").available(true).build();
+        item1 = CreateItemDto.builder().name("Yandex").description("YandexPracticum").available(true).build();
         item2 = ItemDto.builder()
                 .id(1L)
                 .name("Yandex")

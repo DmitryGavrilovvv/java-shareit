@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.item.model.ItemDtoRequest;
+import ru.practicum.shareit.user.model.UserDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 public class ItemRequestDto {
     Long id;
     String description;
-    Long requestorId;
+    UserDto requestor;
     LocalDateTime created;
     List<ItemDtoRequest> items;
 }
